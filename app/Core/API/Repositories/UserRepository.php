@@ -9,13 +9,17 @@ class UserRepository implements IUserRepository
 {
     public function save(array $data): ?User
     {
-        $user = new User();
-        $user->fill($data);
+        $entity = new User();
 
-        if ($user->save())
-            return $user;
+        if( ! empty($data[$entity->getKeyName()]))
+        {
+            $entityFound = User::find($data[$entity->getKeyName()]);
 
-        return NULL;
+            if(!is_null($entityFound))
+                $entity = $entityFound;
+        }
+
+        return $entity->fill($data)->save() ? $entity : NULL;
     }
 
     public function byEmail(string $email): ?User

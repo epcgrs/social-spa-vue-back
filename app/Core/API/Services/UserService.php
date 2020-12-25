@@ -20,9 +20,15 @@ class UserService implements IUserService
 
     public function save(array $data): ?User
     {
-        $data['password'] = Hash::make( $data['password'] );
-
-        return $this->userRepository->save($data);
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+        if ( $user = $this->userRepository->save($data) ) {
+            auth()->attempt(['email' => $user->email, 'password' => $user->makeVisible('password')->password]);
+        }
+        return $user;
     }
 
     public function login(Request $request): ?User
@@ -32,7 +38,7 @@ class UserService implements IUserService
         $user       = $this->userRepository->byEmail($email);
 
         if ($user  &&  Hash::check($password, $user->makeVisible('password')->password)) {
-            auth()->login($user);
+            auth()->attempt(['email' => $user->email, 'password' => $user->makeVisible('password')->password]);
             return $user;
         }
         return NULL;

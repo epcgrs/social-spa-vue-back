@@ -24,6 +24,7 @@ Route::namespace('API')->group(function () {
 
     Route::prefix('usuario')->group(function () {
         Route::post('salvar', 'UserController@store')->name('usuario.salvar');
+        Route::put('atualizar', 'UserController@update')->name('usuario.update');
         Route::post('login', 'UserController@login')->name('usuario.login');
     });
 
