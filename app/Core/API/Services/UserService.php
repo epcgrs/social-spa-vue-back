@@ -7,6 +7,8 @@ use App\Core\API\Services\Contracts\IUserService;
 use App\Core\Entities\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserService implements IUserService
 {
@@ -25,6 +27,32 @@ class UserService implements IUserService
         } else {
             unset($data['password']);
         }
+
+        if(isset($data['image'])) {
+
+            if (isset($data['id'])) {
+                $user = $this->userRepository->byId($data['id']);
+
+                if ($user && $user->image != null) {
+                    Storage::disk('profiles')->delete($user->getAttributes()['image']);
+                }
+            }
+
+
+            $imageBase64 = $data['image'];
+            @list($type, $file_data) = explode(';', $imageBase64);
+            @list(, $file_data) = explode(',', $file_data);
+
+            $imageName = Str::random(5) . time() .'.'.'png';
+
+            Storage::disk('profiles')->put($imageName, base64_decode($file_data));
+
+            $data['image'] = $imageName;
+        } else {
+            unset($data['image']);
+        }
+
+
         if ( $user = $this->userRepository->save($data) ) {
             auth()->attempt(['email' => $user->email, 'password' => $user->makeVisible('password')->password]);
         }
@@ -55,6 +83,9 @@ class UserService implements IUserService
         return false;
     }
 
-
+    public function toggleFriend(int $friendId): bool
+    {
+        return $this->userRepository->toggleFriend($friendId);
+    }
 
 }

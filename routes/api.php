@@ -28,7 +28,12 @@ Route::namespace('API')->group(function () {
         Route::post('login', 'UserController@login')->name('usuario.login');
     });
 
-
+    Route::get('testes', function () {
+        $user = \App\Core\Entities\User::find(1);
+         $content = \App\Core\Entities\Content::find(1);
+         $user->likes()->toggle($content->id);
+        return $content->likes()->count();
+    });
 });
 
 

@@ -4,6 +4,7 @@ namespace App\Core\API\Repositories;
 
 use App\Core\API\Repositories\Contracts\IUserRepository;
 use App\Core\Entities\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserRepository implements IUserRepository
 {
@@ -25,6 +26,16 @@ class UserRepository implements IUserRepository
     public function byEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
+    }
+
+    public function byId(int $key): ?User
+    {
+        return User::find($key);
+    }
+
+    public function toggleFriend(int $friendId): bool
+    {
+        return Auth::user()->friends()->toggle($friendId);
     }
 
 }
