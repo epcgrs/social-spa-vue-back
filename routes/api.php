@@ -26,6 +26,7 @@ Route::namespace('API')->group(function () {
         Route::post('salvar', 'UserController@store')->name('usuario.salvar');
         Route::put('atualizar', 'UserController@update')->middleware('auth:api')->name('usuario.update');
         Route::post('login', 'UserController@login')->name('usuario.login');
+        Route::post('seguir', 'UserController@toggleFriend')->name('usuario.seguir');
     });
 
     Route::prefix('conteudo')->middleware('auth:api')->group(function () {

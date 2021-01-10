@@ -45,7 +45,6 @@ class ContentController extends Controller
             return response()->json([
                 'status' => true,
                 'count_likes' => $countLikes,
-                'content_list'  => $this->contentService->listPostsByFriends(),
             ], 200);
         }
 
@@ -70,7 +69,6 @@ class ContentController extends Controller
             return response()->json([
                 'status' => true,
                 'comment' => $comment,
-                'content_list' => $this->contentService->listPostsByFriends(),
             ]);
         }
 

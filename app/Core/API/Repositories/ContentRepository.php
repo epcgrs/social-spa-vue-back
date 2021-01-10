@@ -68,7 +68,21 @@ class ContentRepository implements IContentRepository
         $user = User::find($userId);
 
         if ($user) {
-            return $user->contents()->with('user', 'likes', 'comments', 'comments.user')->orderBy('created_at', 'DESC')->paginate(10);
+            $contents = $user->contents()->with('user', 'likes', 'comments', 'comments.user')->orderBy('created_at', 'DESC')->paginate(10);
+            foreach ($contents as $content) {
+                $content->count_likes = $content->likes()->count();
+
+                if ($liked = auth()->user()->likes()->find($content->id)) {
+                    $content->already_liked = true;
+                } else {
+                    $content->already_liked = false;
+                }
+
+                $content->count_comments = $content->comments()->count();
+
+            }
+
+            return $contents;
         } else {
             return $user;
         }

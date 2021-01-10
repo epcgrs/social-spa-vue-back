@@ -9,5 +9,5 @@ interface IUserService
 {
     public function save(array $data): ?User;
     public function login(Request $request): ?User;
-    public function toggleFriend(int $friendId): bool;
+    public function toggleFriend(int $followerId, int $friendId): bool;
 }

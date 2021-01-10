@@ -84,9 +84,9 @@ class UserService implements IUserService
         return false;
     }
 
-    public function toggleFriend(int $friendId): bool
+    public function toggleFriend(int $followerId, int $friendId): bool
     {
-        return $this->userRepository->toggleFriend($friendId);
+        return $this->userRepository->toggleFriend($followerId, $friendId);
     }
 
 }

@@ -33,9 +33,19 @@ class UserRepository implements IUserRepository
         return User::find($key);
     }
 
-    public function toggleFriend(int $friendId): bool
+    public function toggleFriend(int $followerId, int $friendId): bool
     {
-        return Auth::user()->friends()->toggle($friendId);
+        $follower = User::find($followerId);
+
+        if (!$follower || ($followerId == $friendId)) {
+            return FALSE;
+        }
+
+        if ($follower->friends()->toggle($friendId)) {
+            return TRUE;
+        }
+
+        return FALSE;
     }
 
 }

@@ -61,14 +61,15 @@ class UserController extends Controller
             ]);
 
         }
-        return response()->json(['status' => false], 400);
+        return response()->json(['status' => false], 200);
     }
 
     public function toggleFriend(Request $request)
     {
         $friendId = $request->input('user_id');
+        $followerId = $request->input('logged_id');
 
-        if ($this->userService->toggleFriend($friendId)) {
+        if ($this->userService->toggleFriend($followerId, $friendId)) {
             return json_encode([
                 'status' => true,
             ]);
