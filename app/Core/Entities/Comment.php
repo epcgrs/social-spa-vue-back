@@ -15,6 +15,10 @@ class Comment extends Model
         'text'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:d/m/Y H:i:s',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

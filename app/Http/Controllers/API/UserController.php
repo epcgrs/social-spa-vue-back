@@ -55,13 +55,13 @@ class UserController extends Controller
 
             $user->token = $user->createToken($user->email)->accessToken;
 
-            return json_encode([
+            return response()->json([
                 'status' => true,
                 'user' => $user
             ]);
 
         }
-        return json_encode(['status' => false]);
+        return response()->json(['status' => false], 400);
     }
 
     public function toggleFriend(Request $request)

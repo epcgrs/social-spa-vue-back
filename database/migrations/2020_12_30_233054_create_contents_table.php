@@ -18,8 +18,8 @@ class CreateContentsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->text('text');
-            $table->string('image');
-            $table->string('slug');
+            $table->string('image')->nullable();
+            $table->string('link')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

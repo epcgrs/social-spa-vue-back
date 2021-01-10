@@ -6,6 +6,7 @@ use App\Core\API\Repositories\Contracts\IUserRepository;
 use App\Core\API\Services\Contracts\IUserService;
 use App\Core\Entities\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -54,9 +55,9 @@ class UserService implements IUserService
 
 
         if ( $user = $this->userRepository->save($data) ) {
-            auth()->attempt(['email' => $user->email, 'password' => $user->makeVisible('password')->password]);
+            return $user;
         }
-        return $user;
+        return NULL;
     }
 
     public function login(Request $request): ?User
@@ -66,7 +67,7 @@ class UserService implements IUserService
         $user       = $this->userRepository->byEmail($email);
 
         if ($user  &&  Hash::check($password, $user->makeVisible('password')->password)) {
-            auth()->attempt(['email' => $user->email, 'password' => $user->makeVisible('password')->password]);
+            auth()->login($user);
             return $user;
         }
         return NULL;

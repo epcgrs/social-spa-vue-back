@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Core\API\Services\Contracts\ICommentService;
 use App\Core\API\Services\Contracts\IContentService;
-use App\Core\Entities\Content;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
@@ -15,52 +13,69 @@ class ContentController extends Controller
     /* @var IContentService */
     protected $contentService;
 
-    public function __construct(IContentService $contentService)
+    /* @var ICommentService */
+    protected $commentService;
+
+    public function __construct(IContentService $contentService, ICommentService $commentService)
     {
         $this->contentService = $contentService;
+        $this->commentService = $commentService;
     }
 
-    public function save(array $data): ?Content
+    public function save(Request $request)
     {
-        if(isset($data['image'])) {
+        $data = $request->all();
 
-            if (isset($data['id'])) {
-                $content = $this->contentService->byId($data['id']);
-
-                if ($content && $content->image != null) {
-                    Storage::disk('contents')->delete($content->getAttributes()['image']);
-                }
-            }
-
-
-            $imageBase64 = $data['image'];
-            @list($type, $file_data) = explode(';', $imageBase64);
-            @list(, $file_data) = explode(',', $file_data);
-
-            $imageName = Str::random(5) . time() .'.'.'png';
-
-            Storage::disk('contents')->put($imageName, base64_decode($file_data));
-
-            $data['image'] = $imageName;
-        } else {
-            unset($data['image']);
+        if ($content = $this->contentService->save($data)) {
+            return response()->json([
+                'status' => true,
+                'content' => $content
+            ], 200);
         }
-
-
-        return $this->contentService->save($data);
+        return response()->json(['status', false], 400);
 
     }
 
     public function toggleLike(Request $request)
     {
         $contentId = $request->input('content_id');
+        $countLikes = $this->contentService->toggleLike($contentId);
 
-        if ($this->contentService->toggleLike($contentId)) {
-            return json_encode([
+        if (!is_null($countLikes)) {
+            return response()->json([
                 'status' => true,
+                'count_likes' => $countLikes,
+                'content_list'  => $this->contentService->listPostsByFriends(),
+            ], 200);
+        }
+
+        return response()->json(['status' => false], 400);
+    }
+
+    public function listByFriends()
+    {
+        $contents = $this->contentService->listPostsByFriends();
+        return response()->json($contents);
+    }
+
+    public function listByUser($id)
+    {
+        $contents = $this->contentService->listUserPosts($id);
+        $user = $this->contentService->getAuthor($id);
+        return response()->json(['contents' => $contents, 'user_page' => $user]);
+    }
+
+    public function comment(Request $request) {
+        if($comment = $this->commentService->store($request->all())) {
+            return response()->json([
+                'status' => true,
+                'comment' => $comment,
+                'content_list' => $this->contentService->listPostsByFriends(),
             ]);
         }
 
-        return json_encode(['status' => false]);
+        return response()->json([
+            'status' => false,
+        ]);
     }
 }

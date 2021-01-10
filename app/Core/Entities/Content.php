@@ -15,7 +15,11 @@ class Content extends Model
         'title',
         'text',
         'image',
-        'slug'
+        'link'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:d/m/Y H:i:s',
     ];
 
     public function getImageAttribute($value)

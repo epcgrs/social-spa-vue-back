@@ -24,15 +24,16 @@ Route::namespace('API')->group(function () {
 
     Route::prefix('usuario')->group(function () {
         Route::post('salvar', 'UserController@store')->name('usuario.salvar');
-        Route::put('atualizar', 'UserController@update')->name('usuario.update');
+        Route::put('atualizar', 'UserController@update')->middleware('auth:api')->name('usuario.update');
         Route::post('login', 'UserController@login')->name('usuario.login');
     });
 
-    Route::get('testes', function () {
-        $user = \App\Core\Entities\User::find(1);
-         $content = \App\Core\Entities\Content::find(1);
-         $user->likes()->toggle($content->id);
-        return $content->likes()->count();
+    Route::prefix('conteudo')->middleware('auth:api')->group(function () {
+        Route::post('salvar', 'ContentController@save')->name('content.save');
+        Route::get('feed', 'ContentController@listByFriends')->name('content.list.by.friends');
+        Route::get('user-content/{id}', 'ContentController@listByUser')->middleware('auth:api')->name('content.user.list');
+        Route::post('toggle-like', 'ContentController@toggleLike')->name('content.toggle.like');
+        Route::post('comment', 'ContentController@comment')->name('content.comment');
     });
 });
 
