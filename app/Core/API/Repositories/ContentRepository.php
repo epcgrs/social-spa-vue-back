@@ -44,7 +44,14 @@ class ContentRepository implements IContentRepository
 
     public function listPostsByFriends(int $userId): LengthAwarePaginator
     {
-        $contents = Content::with('user', 'likes', 'comments', 'comments.user')->orderBy('created_at', 'DESC')->paginate(10);
+
+        $user = User::find($userId);
+
+        $userFriends  = $user->friends()->pluck('users.id');
+
+        $userFriends->push($userId);
+
+        $contents = Content::whereIn('user_id', $userFriends)->with('user', 'likes', 'comments', 'comments.user')->orderBy('created_at', 'DESC')->paginate(10);
 
         foreach ($contents as $content) {
             $content->count_likes = $content->likes()->count();

@@ -78,4 +78,35 @@ class UserController extends Controller
         return json_encode(['status' => false]);
     }
 
+
+    public function userFriends(Request $request)
+    {
+        $user = $request->user();
+
+        if($friends = $this->userService->userFriends($user)) {
+            return json_encode([
+                'status'=> true,
+                'friends' => $friends,
+                'followers' => $this->userService->userFollowers($user),
+            ]);
+        }
+
+        return json_encode(['status'=>false]);
+    }
+
+    public function userPageFriends($id, Request $request)
+    {
+        $user = $request->user();
+
+        if($friends = $this->userService->userPageFriends($id)) {
+            return json_encode([
+                'status'=> true,
+                'friends' => $friends,
+                'auth_friends' => $this->userService->userFriends($user),
+                'followers' => $this->userService->userFollowersById($id),
+            ]);
+        }
+
+        return json_encode(['status'=>false]);
+    }
 }

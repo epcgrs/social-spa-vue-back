@@ -26,7 +26,9 @@ Route::namespace('API')->group(function () {
         Route::post('salvar', 'UserController@store')->name('usuario.salvar');
         Route::put('atualizar', 'UserController@update')->middleware('auth:api')->name('usuario.update');
         Route::post('login', 'UserController@login')->name('usuario.login');
-        Route::post('seguir', 'UserController@toggleFriend')->name('usuario.seguir');
+        Route::post('seguir', 'UserController@toggleFriend')->middleware('auth:api')->name('usuario.seguir');
+        Route::get('listar-amigos', 'UserController@userFriends')->middleware('auth:api')->name('usuario.listar.amigos');
+        Route::get('listar-amigos-pagina/{id}', 'UserController@userPageFriends')->middleware('auth:api')->name('usuario.listar.amigos.pagina');
     });
 
     Route::prefix('conteudo')->middleware('auth:api')->group(function () {

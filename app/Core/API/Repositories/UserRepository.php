@@ -4,6 +4,7 @@ namespace App\Core\API\Repositories;
 
 use App\Core\API\Repositories\Contracts\IUserRepository;
 use App\Core\Entities\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class UserRepository implements IUserRepository
@@ -47,5 +48,28 @@ class UserRepository implements IUserRepository
 
         return FALSE;
     }
+
+    public function userFriends(User $user): Collection
+    {
+        return $user->friends()->get();
+    }
+
+    public function userPageFriends($id): Collection
+    {
+        $user = User::find($id);
+        return $user->friends()->get();
+    }
+
+    public function userFollowers(User $user): Collection
+    {
+        return $user->followers()->get();
+    }
+
+    public function userFollowersById(int $id): Collection
+    {
+        $user = User::find($id);
+        return $user->followers()->get();
+    }
+
 
 }

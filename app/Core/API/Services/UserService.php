@@ -6,6 +6,7 @@ use App\Core\API\Repositories\Contracts\IUserRepository;
 use App\Core\API\Services\Contracts\IUserService;
 use App\Core\Entities\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -88,5 +89,26 @@ class UserService implements IUserService
     {
         return $this->userRepository->toggleFriend($followerId, $friendId);
     }
+
+    public function userFriends(User $user): Collection
+    {
+        return $this->userRepository->userFriends($user);
+    }
+
+    public function userPageFriends($id): Collection
+    {
+        return $this->userRepository->userPageFriends($id);
+    }
+
+    public function userFollowers(User $user): Collection
+    {
+        return $this->userRepository->userFollowers($user);
+    }
+
+    public function userFollowersById(int $id): Collection
+    {
+        return $this->userRepository->userFollowersById($id);
+    }
+
 
 }
